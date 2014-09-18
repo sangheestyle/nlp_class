@@ -7,6 +7,7 @@
 \usepackage[usenames,dvipsnames]{color}
 \usepackage[pdftex]{graphicx}
 \usepackage{url}
+\usepackage{hyperref}
 
 
 %@modernhindi
@@ -298,12 +299,6 @@ English. Here is how the algorithm works:
  each transducer. It also contains code that allows you to input a
  single name on the command line to get the output.
 
- It is very important to note, however, that this code \textbf{does
-   not produce} the output for each input name. You are required to
- write that code inside the given \texttt{for} loop, as indicated in
- the file. We will use this hook to evaluate your code on a list of
- names.  \\
-
 \noindent \textbf{Notes}:
 \begin{enumerate}
 	\item[(i)] Your grade will only be evaluated on the command
@@ -353,7 +348,7 @@ Arabic & French & English Gloss \\
 \begin{itemize}
 \item Between 70--79 and 90--99, French numbers use a
 vegesimal base system.  For everything else, it is base 10.
-\item Numbers congruent to 1 mod 10 have an ``and''.  For example, 21
+\item Numbers congruent to 1 mod 10 in the decimal reange have an ``and''.  For example, 21
   is \textit{vingt et un} (``twenty and one'')
 \item Numbers larger than 100 are written as $x$ hundred.  For
   example, 600 becomes \textit{six cent} (``six hundred'').
@@ -398,5 +393,22 @@ The shell for this part of the assignment is in
 additional regular expression rule that will correctly handle c/ck
 alternations. Before doing this, you should be able to execute
 \texttt{tests.py} to see the tests failing.
+
+
+
+\section*{Turning in Your Assignment}
+
+As usual, submit your completed code to
+\href{https://moodle.cs.colorado.edu/course/view.php?id=161}{Moodle}.
+Make sure:
+\begin{itemize}
+  \item You do not change filenames or function names
+  \item Turn in all the files you modified individually (do not zip or
+    combine them)
+  \item You do not change the \textsc{api} of the functions
+  \item Do not add \texttt{print} statements to the code you turn in
+  \item Add your name as a comment to all files you turn in
+\end{itemize}
+
 
 \end{document}
