@@ -12,17 +12,47 @@ def letters_to_numbers():
     f1 = FST('soundex-generate')
 
     # Indicate that '1' is the initial state
-    f1.add_state('start')
-    f1.add_state('next')
-    f1.initial_state = 'start'
+    states = ['q1', 'q2', 'n1', 'n2', 'n3', 'n4', 'n5', 'n6']
+    for state in states:
+        f1.add_state(state)
+
+    f1.initial_state = 'q1'
 
     # Set all the final states
-    f1.set_final('next')
+    for state in ['q2', 'n1', 'n2', 'n3', 'n4', 'n5', 'n6']:
+        f1.set_final(state)
 
     # Add the rest of the arcs
     for letter in string.ascii_lowercase:
-        f1.add_arc('start', 'next', (letter), (letter))
-        f1.add_arc('next', 'next', (letter), '0')
+        f1.add_arc('q1', 'q2', (letter), (letter))
+        if letter in set('aehiouwy'):
+            for state in ['q2', 'n1', 'n2', 'n3', 'n4', 'n5', 'n6']:
+                f1.add_arc(state, state, (letter), ())
+        else:
+            if letter in set('bfpv'):
+                for state in ['q2', 'n2', 'n3', 'n4', 'n5', 'n6']:
+                    f1.add_arc(state, 'n1', (letter), ('1'))
+                f1.add_arc('n1', 'n1', (letter), ())
+            elif letter in set('cgjkqsxz'):
+                for state in ['q2', 'n1', 'n3', 'n4', 'n5', 'n6']:
+                    f1.add_arc(state, 'n2', (letter), ('2'))
+                f1.add_arc('n2', 'n2', (letter), ())
+            elif letter in set('dt'):
+                for state in ['q2', 'n1', 'n2', 'n4', 'n5', 'n6']:
+                    f1.add_arc(state, 'n3', (letter), ('3'))
+                f1.add_arc('n3', 'n3', (letter), ())
+            elif letter in set('l'):
+                for state in ['q2', 'n1', 'n2', 'n3', 'n5', 'n6']:
+                    f1.add_arc(state, 'n4', (letter), ('4'))
+                f1.add_arc('n4', 'n4', (letter), ())
+            elif letter in set('mn'):
+                for state in ['q2', 'n1', 'n2', 'n3', 'n4', 'n6']:
+                    f1.add_arc(state, 'n5', (letter), ('5'))
+                f1.add_arc('n5', 'n5', (letter), ())
+            elif letter in set('r'):
+                for state in ['q2', 'n1', 'n2', 'n3', 'n4', 'n5']:
+                    f1.add_arc(state, 'n6', (letter), ('6'))
+                f1.add_arc('n6', 'n6', (letter), ())
     return f1
 
 def truncate_to_three_digits():
@@ -74,4 +104,5 @@ if __name__ == '__main__':
     f3 = add_zero_padding()
 
     if user_input:
-        print("%s -> %s" % (user_input, composechars(tuple(user_input), f1, f2, f3)))
+        trace(f1, user_input)
+        #print("%s -> %s" % (user_input, composechars(tuple(user_input), f1, f2, f3)))
