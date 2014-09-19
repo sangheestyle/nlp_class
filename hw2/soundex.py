@@ -93,19 +93,24 @@ def add_zero_padding():
     # Now, the third fst - the zero-padding fst
     f3 = FST('soundex-padzero')
 
-    f3.add_state('1')
-    f3.add_state('2')
-    
+    states = ['1', '2', '3', '4']
+
+    for state in states:
+        f3.add_state(state)
+
     f3.initial_state = '1'
-    f3.set_final('2')
+    f3.set_final('4')
 
     for letter in string.letters:
         f3.add_arc('1', '1', letter, letter)
-    for number in xrange(10):
-        f3.add_arc('1', '1', str(number), str(number))
-    
-    for n in range(10):
-        f3.add_arc('1', '2', (), '000')
+
+    for number in range(1, 10):
+        f3.add_arc('1', '2', str(number), str(number))
+        f3.add_arc('2', '3', str(number), str(number))
+        f3.add_arc('3', '4', str(number), str(number))
+
+    f3.add_arc('2', '4', (), '00')
+    f3.add_arc('3', '4', (), '0')
     return f3
 
 if __name__ == '__main__':
@@ -115,5 +120,4 @@ if __name__ == '__main__':
     f3 = add_zero_padding()
 
     if user_input:
-        trace(f2, user_input)
         print("%s -> %s" % (user_input, composechars(tuple(user_input), f1, f2, f3)))
