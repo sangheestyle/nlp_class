@@ -65,16 +65,27 @@ def truncate_to_three_digits():
     f2 = FST('soundex-truncate')
 
     # Indicate initial and final states
-    f2.add_state('1')
+    states = ['1', 'd1', 'd2', 'd3']
+
+    for state in states:
+        f2.add_state(state)
+
     f2.initial_state = '1'
-    f2.set_final('1')
+
+    for state in ['d1', 'd2', 'd3']:
+        f2.set_final(state)
 
     # Add the arcs
     for letter in string.letters:
         f2.add_arc('1', '1', (letter), (letter))
 
+    for index, state in enumerate(states):
+        if index > 0:
+            for n in range(10):
+                f2.add_arc(states[index-1], states[index], str(n), str(n))
+
     for n in range(10):
-        f2.add_arc('1', '1', str(n), str(n))
+        f2.add_arc('d3', 'd3', str(n), ())
 
     return f2
 
@@ -104,5 +115,5 @@ if __name__ == '__main__':
     f3 = add_zero_padding()
 
     if user_input:
-        trace(f1, user_input)
-        #print("%s -> %s" % (user_input, composechars(tuple(user_input), f1, f2, f3)))
+        trace(f2, user_input)
+        print("%s -> %s" % (user_input, composechars(tuple(user_input), f1, f2, f3)))
