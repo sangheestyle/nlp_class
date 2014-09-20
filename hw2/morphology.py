@@ -1,3 +1,6 @@
+# Author: Sanghee Kim
+# Date: September 19, 2014
+
 import re
 
 def iterateRules():

@@ -1,3 +1,6 @@
+# Author: Sanghee Kim
+# Date: September 19, 2014
+
 import sys
 from fst import FST
 from fsmutils import composewords

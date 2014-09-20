@@ -1,3 +1,6 @@
+# Author: Sanghee Kim
+# Date: September 19, 2014
+
 from fst import FST
 import string, sys
 from fsmutils import composechars, trace
