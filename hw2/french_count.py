@@ -15,7 +15,6 @@ kFRENCH_AND = 'et'
 def prepare_input(integer):
     assert isinstance(integer, int) and integer < 1000 and integer >= 0, \
       "Integer out of bounds"
-    print list("%03i" % integer)
     return list("%03i" % integer)
 
 def french_count():
