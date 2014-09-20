@@ -48,11 +48,11 @@ def french_count():
             f.add_arc('h2', 't4', str(ii), ())
             f.add_arc('t3', 'd1', str(ii), ())
             f.add_arc('t4', 'd1', str(ii), ())
+            f.add_arc('t2', 'd1', str(ii), [kFRENCH_TRANS[10]])
             f.add_arc('t5', 'd1', str(ii), [kFRENCH_TRANS[10]]) #dix
         elif ii == 1:
             f.add_arc('start', 'h2', str(ii), [kFRENCH_TRANS[100]]) # hundread
             f.add_arc('h1', 't2', str(ii), ())
-            f.add_arc('h2', 't2', str(ii), ())
             f.add_arc('h2', 't2', str(ii), ())
             f.add_arc('t3', 'd1', str(ii), [kFRENCH_AND + " " + kFRENCH_TRANS[1]])
             f.add_arc('t4', 'd1', str(ii), [kFRENCH_TRANS[ii]])
@@ -102,6 +102,5 @@ if __name__ == '__main__':
     user_input = int(string_input)
     f = french_count()
     if string_input:
-        trace(f, prepare_input(user_input))
         print user_input, '-->',
         print " ".join(f.transduce(prepare_input(user_input)))
