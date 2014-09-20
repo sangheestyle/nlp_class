@@ -15,6 +15,8 @@ def iterateRules():
     #
     # if you need help with python regular expressions, see:
     #   http://docs.python.org/library/re.html
+    yield ("(.*[aeiou])c\+(ed)", "\\1ck\\2")
+    yield ("(.*[aeiou])c\+(ing)", "\\1ck\\2")
 
 
 def generate(analysis):
