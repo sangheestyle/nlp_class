@@ -36,8 +36,9 @@ class BigramLanguageModel:
 
         self._tokenizer = tokenize_function
         self._normalizer = normalize_function
-        
+
         # Add your code here!
+        self._word_count = defaultdict(int)
 
     def train_seen(self, word, count=1):
         """
@@ -47,17 +48,18 @@ class BigramLanguageModel:
         assert not self._vocab_final, \
             "Trying to add new words to finalized vocab"
 
-        # Add your code here!            
+        # Add your code here!
+        self._word_count[word] += count
 
     def tokenize(self, sent):
         """
-        Returns a generator over tokens in the sentence.  
+        Returns a generator over tokens in the sentence
 
         You don't need to modify this code.
         """
         for ii in self._tokenizer(sent):
             yield ii
-        
+
     def vocab_lookup(self, word):
         """
         Given a word, provides a vocabulary representation.  Words under the
@@ -67,7 +69,10 @@ class BigramLanguageModel:
         assert self._vocab_final, \
             "Vocab must be finalized before looking up words"
 
-        return -1
+        if self._word_count[word] >= 3:
+            return word
+        else:
+            return -1
 
     def finalize(self):
         """
