@@ -1,6 +1,7 @@
 from math import log, exp
 from collections import defaultdict
 from string import lower
+import itertools
 import argparse
 
 from numpy import mean
@@ -38,7 +39,8 @@ class BigramLanguageModel:
         self._normalizer = normalize_function
 
         # Add your code here!
-        self._word_count = defaultdict(int)
+        self._word_id = defaultdict(itertools.count().next)
+        self._id_count = defaultdict(int)
 
     def train_seen(self, word, count=1):
         """
@@ -49,7 +51,8 @@ class BigramLanguageModel:
             "Trying to add new words to finalized vocab"
 
         # Add your code here!
-        self._word_count[word] += count
+        id = self._word_id[word]
+        self._id_count[id]+= count
 
     def tokenize(self, sent):
         """
@@ -69,8 +72,8 @@ class BigramLanguageModel:
         assert self._vocab_final, \
             "Vocab must be finalized before looking up words"
 
-        if self._word_count[word] >= 3:
-            return word
+        if self._id_count[self._word_id[word]] >= 3:
+            return self._word_id[word]
         else:
             return -1
 
