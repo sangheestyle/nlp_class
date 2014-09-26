@@ -180,7 +180,7 @@ class BigramLanguageModel:
     def sample(self, samples=25):
         """
         Sample words from the language model.
-        
+
         @arg samples The number of samples to return.
         """
         yield ""
@@ -196,7 +196,7 @@ if __name__ == "__main__":
                            type=float, default=0.1, required=False)
     argparser.add_argument("--unk_cutoff", help="How many times must a word " + \
                            "be seen before it enters the vocabulary",
-                           type=int, default=2, required=False)    
+                           type=int, default=2, required=False)
     argparser.add_argument("--katz_cutoff", help="Cutoff when to use Katz " + \
                            "backoff",
                            type=float, default=0.0, required=False)
@@ -211,8 +211,8 @@ if __name__ == "__main__":
                            type=float, default=1.0, required=False)
     argparser.add_argument("--method", help="Which LM method we use",
                            type=str, default='laplace', required=False)
-    
-    args = argparser.parse_args()    
+
+    args = argparser.parse_args()
     lm = BigramLanguageModel(kUNK_CUTOFF, jm_lambda=args.jm_lambda,
                              dirichlet_alpha=args.dir_alpha,
                              katz_cutoff=args.katz_cutoff,
