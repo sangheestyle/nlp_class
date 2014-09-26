@@ -41,7 +41,7 @@ class BigramLanguageModel:
         # Add your code here!
         self._word_id = defaultdict(itertools.count().next)
         self._id_count = defaultdict(int)
-        self._training_set = defaultdict(int)
+        self._training_set = {}
 
     def train_seen(self, word, count=1):
         """
@@ -111,26 +111,40 @@ class BigramLanguageModel:
         """
         return self._normalizer(word)
 
+    def num_context_and_word(self, context, word):
+        try:
+            num_context_word = self._training_set[context, word]
+        except:
+            num_context_word = 0
+
+        num_context = sum([self._training_set[x] \
+                           for x in self._training_set.keys() if x[0]==context])
+
+        return num_context_word, num_context
+
 
     def mle(self, context, word):
         """
         Return the log MLE estimate of a word given a context.  If the
         MLE would be negative infinity, use kNEG_INF
         """
-        num_context = sum([self._training_set[x] \
-                           for x in self._training_set.keys() if x[0]==context])
-        num_context_word = self._training_set[context, word]
-        if num_context_word == 0:
+        num_cw, num_c = self.num_context_and_word(context, word)
+
+        if num_cw == 0:
             return kNEG_INF
 
-        return lg(float(num_context_word) / float(num_context))
+        return lg(float(num_cw) / float(num_c))
 
     def laplace(self, context, word):
         """
         Return the log MLE estimate of a word given a context.
         """
+        alpha = 1
+        k = len(self._training_set.keys())
+        num_cw, num_c = self.num_context_and_word(context, word)
 
-        return 0.0
+        return lg(float(num_cw + alpha) / float(num_c + alpha*k))
+
 
     def good_turing(self, context, word):
         """
@@ -158,7 +172,11 @@ class BigramLanguageModel:
         Additive smoothing, assuming independent Dirichlets with fixed
         hyperparameter.
         """
-        return 0.0
+        alpha = self._dirichlet_alpha
+        k = len(self._training_set.keys())
+        num_cw, num_c = self.num_context_and_word(context, word)
+
+        return lg(float(num_cw + alpha) / float(num_c + alpha*k))
 
     def add_train(self, sentence):
         """
@@ -167,8 +185,11 @@ class BigramLanguageModel:
 
         # You'll need to complete this function, but here's a line of code that
         # will hopefully get you started.
+        training_set = defaultdict(int)
         for context, word in bigrams(self.tokenize_and_censor(sentence)):
-            self._training_set[context, word] += 1
+            training_set[context, word] += 1
+
+        self._training_set = dict(training_set)
 
     def perplexity(self, sentence, method):
         """
