@@ -41,6 +41,7 @@ class BigramLanguageModel:
         # Add your code here!
         self._word_id = defaultdict(itertools.count().next)
         self._id_count = defaultdict(int)
+        self._training_set = defaultdict(int)
 
     def train_seen(self, word, count=1):
         """
@@ -72,7 +73,15 @@ class BigramLanguageModel:
         assert self._vocab_final, \
             "Vocab must be finalized before looking up words"
 
-        if self._id_count[self._word_id[word]] >= 3:
+        if word == kSTART:
+            return -3
+        elif word ==kEND:
+            return -2
+
+        if not self._word_id.has_key(word):
+            # <UNK> is -1
+            return -1
+        elif self._id_count[self._word_id[word]] >= kUNK_CUTOFF:
             return self._word_id[word]
         else:
             return -1
@@ -108,8 +117,13 @@ class BigramLanguageModel:
         Return the log MLE estimate of a word given a context.  If the
         MLE would be negative infinity, use kNEG_INF
         """
+        num_context = sum([self._training_set[x] \
+                           for x in self._training_set.keys() if x[0]==context])
+        num_context_word = self._training_set[context, word]
+        if num_context_word == 0:
+            return kNEG_INF
 
-        return 0.0
+        return lg(float(num_context_word) / float(num_context))
 
     def laplace(self, context, word):
         """
@@ -154,7 +168,7 @@ class BigramLanguageModel:
         # You'll need to complete this function, but here's a line of code that
         # will hopefully get you started.
         for context, word in bigrams(self.tokenize_and_censor(sentence)):
-            None
+            self._training_set[context, word] += 1
 
     def perplexity(self, sentence, method):
         """
