@@ -42,6 +42,7 @@ class BigramLanguageModel:
         self._word_id = defaultdict(itertools.count().next)
         self._id_count = defaultdict(int)
         self._training_set = {}
+        self._training_set_uni = {}
 
     def train_seen(self, word, count=1):
         """
@@ -158,7 +159,11 @@ class BigramLanguageModel:
         given a context; interpolates context probability with the
         overall corpus probability.
         """
-        return 0.0
+        num_cw, num_c = self.num_context_and_word(context, word)
+
+        return lg((self._jm_lambda * num_cw/num_c) + \
+               ((1.0-self._jm_lambda) * self._training_set_uni[word])/ \
+               len(self._training_set_uni))
 
     def kneser_ney(self, context, word):
         """
@@ -190,6 +195,12 @@ class BigramLanguageModel:
             training_set[context, word] += 1
 
         self._training_set = dict(training_set)
+
+        training_set_uni = defaultdict(int)
+        for word in self.tokenize_and_censor(sentence):
+            training_set_uni[word] += 1
+
+        self._training_set_uni = dict(training_set_uni)
 
     def perplexity(self, sentence, method):
         """
