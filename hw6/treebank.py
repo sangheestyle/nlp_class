@@ -14,9 +14,17 @@ class PcfgEstimator:
         Add the sentence to the dataset
         """
 
-        assert isinstance(sentence, nltk.tree.Tree), "Can only add counts from a tree"
+        assert isinstance(sentence, nltk.tree.Tree), \
+               "Can only add counts from a tree"
 
-        # FINISH THIS!
+        for p in sentence.productions():
+            if isinstance(p.rhs()[0], nltk.grammar.Nonterminal):
+                rhs_string = " ".join(r.symbol() for r in p.rhs())
+            else:
+                rhs_string = " ".join(p.rhs())
+            self._counts[p.lhs().symbol()].update(nltk.FreqDist([rhs_string]))
+
+        print self._counts
 
     def query(self, lhs, rhs):
         """
