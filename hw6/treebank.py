@@ -24,8 +24,6 @@ class PcfgEstimator:
                 rhs_string = " ".join(p.rhs())
             self._counts[p.lhs().symbol()].update(nltk.FreqDist([rhs_string]))
 
-        print self._counts
-
     def query(self, lhs, rhs):
         """
         Returns the MLE probability of this production

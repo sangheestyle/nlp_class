@@ -22,14 +22,46 @@ class Transition:
         else:
             return self._type
 
+
 def transition_sequence(sentence):
     """
     Return the sequence of shift-reduce actions that reconstructs the input sentence.
     """
+    node_list = sentence.nodelist
+    stack = list()
+    buff = list()
 
-    sentence_length = len(sentence.nodelist)
-    for ii in xrange(sentence_length - 1):
-        yield Transition('s')
-    for ii in xrange(sentence_length - 1, 1, -1):
-        yield Transition('r', (ii - 1, ii))
+    #initial state
+    stack.append(node_list.pop(0))
+    buff = node_list
+
+    counter = 0
+    while len(stack) != 0:
+        # left action
+        if stack[-1]['tag'] != 'TOP':
+            if stack[-1]['head'] == buff[0]['address']:
+                # left action
+                yield Transition('l', (buff[0]['address'], stack[-1]['address']))
+                stack.pop()
+            elif (stack[-1]['address'] == buff[0]['head']) \
+                and (buff[0]['address'] not in [x['head'] for x in buff[1:]]):
+                # right action
+                yield Transition('r', (stack[-1]['address'], buff[0]['address']))
+                buff.pop(0)
+                buff.insert(0, stack.pop())
+            else:
+                # shift
+                yield Transition('s')
+                stack.append(buff.pop(0))
+        else:
+            if len(buff) == 1:
+                # right action
+                yield Transition('r', (stack[-1]['address'], buff[0]['address']))
+                buff.pop(0)
+                buff.insert(0, stack.pop())
+            else:
+                # shift
+                yield Transition('s')
+                stack.append(buff.pop(0))
     yield Transition('s')
+    stack.append(buff.pop(0))
