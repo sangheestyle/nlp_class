@@ -9,6 +9,7 @@ from nltk.corpus import dependency_treebank as dt
 
 kROOT = "<ROOT>"
 kNEG_INF = float("-inf")
+TL = []
 
 
 def correct_positions(dependency_parse):
@@ -144,13 +145,24 @@ class EisnerParser:
 
         return self._reconstruct((0, len(self._sent) - 1, True, True))
 
-    def _reconstruct(self, span):
-        """
-        Return an iterater over edges in a cell in the parse chart
-        """
+    def _rec(self, span):
+        lst = self._pointer[span]
+        lhs = lst[0]
+        rhs = lst[1]
 
-        # Complete this!
-        return
+        if len(lst) == 3:
+            edge = lst[2]
+            TL.append(edge)
+
+        if lhs[0] != lhs[1]:
+            self._rec(lhs)
+
+        if rhs[0] != rhs[1]:
+            self._rec(rhs)
+
+    def _reconstruct(self, span):
+        self._rec(span)
+        return TL
 
     def _generate_cal_seq(self):
         num_sent = len(self._sent)
@@ -168,7 +180,8 @@ class EisnerParser:
             f2 = self.get_score(q+1, e, False, True)
             ld = self._sf.word_score(self._sent[s],self._sent[e])
             total.append(f1 + f2 + ld)
-        return max(total)
+        i = total.index(max(total))
+        return max(total), [(s, qq[i], True, True), (qq[i]+1, e, False, True), (s, e)]
 
     def _cal_stli(self, s, e):
         qq = list(xrange(s, e))
@@ -178,7 +191,8 @@ class EisnerParser:
             f2 = self.get_score(q+1, e, False, True)
             ld = self._sf.word_score(self._sent[e],self._sent[s])
             total.append(f1 + f2 + ld)
-        return max(total)
+        i = total.index(max(total))
+        return max(total), [(s, qq[i], True, True), (qq[i]+1, e, False, True), (e, s)]
 
     def _cal_strc(self, s, e):
         qq = list(xrange(s+1, e+1))
@@ -187,7 +201,8 @@ class EisnerParser:
             f1 = self.get_score(s, q, True, False)
             f2 = self.get_score(q, e, True, True)
             total.append(f1 + f2)
-        return max(total)
+        i = total.index(max(total))
+        return max(total), [(s, qq[i], True, False), (qq[i], e, True, True)]
 
     def _cal_stlc(self, s, e):
         qq = list(xrange(s, e))
@@ -196,17 +211,22 @@ class EisnerParser:
             f1 = self.get_score(s, q, False, True)
             f2 = self.get_score(q, e, False, False)
             total.append(f1 + f2)
-        return max(total)
+        i = total.index(max(total))
+        return max(total), [(s, qq[i], False, True), (qq[i], e, False, False)]
 
     def fill_chart(self):
         """
         Complete the chart and fill in back pointers
         """
         for s, e in self._generate_cal_seq():
-            self._chart[(s, e, True, False)] = self._cal_stri(s, e)
-            self._chart[(s, e, False, False)] = self._cal_stli(s, e)
-            self._chart[(s, e, True, True)] = self._cal_strc(s, e)
-            self._chart[(s, e, False, True)] = self._cal_stlc(s, e)
+            k1 = (s, e, True, False)
+            k2 = (s, e, False, False)
+            k3 = (s, e, True, True)
+            k4 = (s, e, False, True)
+            self._chart[k1], self._pointer[k1] = self._cal_stri(s, e)
+            self._chart[k2], self._pointer[k2] = self._cal_stli(s, e)
+            self._chart[k3], self._pointer[k3] = self._cal_strc(s, e)
+            self._chart[k4], self._pointer[k4] = self._cal_stlc(s, e)
 
 def custom_sf():
     """
