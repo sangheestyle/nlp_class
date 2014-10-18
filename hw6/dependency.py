@@ -132,7 +132,7 @@ class EisnerParser:
                         score = None
                         if s == e:
                             score = 0.0
-                        self._chart[s, e, r, c] = score
+                        self._chart[(s, e, r, c)] = score
 
     def get_score(self, start, stop, right_dir, complete):
         return self._chart[(start, stop, right_dir, complete)]
@@ -152,12 +152,61 @@ class EisnerParser:
         # Complete this!
         return
 
+    def _generate_cal_seq(self):
+        num_sent = len(self._sent)
+        for diff in xrange(1, num_sent):
+            for s in xrange(0, num_sent):
+                for e in xrange(0, num_sent):
+                    if (s <= e) and (e-s == diff):
+                        yield s, e
+
+    def _cal_stri(self, s, e):
+        qq = list(xrange(s, e))
+        total = []
+        for q in qq:
+            f1 = self.get_score(s, q, True, True)
+            f2 = self.get_score(q+1, e, False, True)
+            ld = self._sf.word_score(self._sent[s],self._sent[e])
+            total.append(f1 + f2 + ld)
+        return max(total)
+
+    def _cal_stli(self, s, e):
+        qq = list(xrange(s, e))
+        total = []
+        for q in qq:
+            f1 = self.get_score(s, q, True, True)
+            f2 = self.get_score(q+1, e, False, True)
+            ld = self._sf.word_score(self._sent[e],self._sent[s])
+            total.append(f1 + f2 + ld)
+        return max(total)
+
+    def _cal_strc(self, s, e):
+        qq = list(xrange(s+1, e+1))
+        total = []
+        for q in qq:
+            f1 = self.get_score(s, q, True, False)
+            f2 = self.get_score(q, e, True, True)
+            total.append(f1 + f2)
+        return max(total)
+
+    def _cal_stlc(self, s, e):
+        qq = list(xrange(s, e))
+        total = []
+        for q in qq:
+            f1 = self.get_score(s, q, False, True)
+            f2 = self.get_score(q, e, False, False)
+            total.append(f1 + f2)
+        return max(total)
+
     def fill_chart(self):
         """
         Complete the chart and fill in back pointers
         """
-
-        # Complete this!
+        for s, e in self._generate_cal_seq():
+            self._chart[(s, e, True, False)] = self._cal_stri(s, e)
+            self._chart[(s, e, False, False)] = self._cal_stli(s, e)
+            self._chart[(s, e, True, True)] = self._cal_strc(s, e)
+            self._chart[(s, e, False, True)] = self._cal_stlc(s, e)
 
 def custom_sf():
     """
