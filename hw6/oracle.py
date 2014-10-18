@@ -36,7 +36,7 @@ def transition_sequence(sentence):
     buff = node_list
 
     counter = 0
-    while len(stack) != 0:
+    while stack:
         # left action
         if stack[-1]['tag'] != 'TOP':
             if stack[-1]['head'] == buff[0]['address']:
