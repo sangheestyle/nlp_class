@@ -120,7 +120,6 @@ class EisnerParser:
         self._tags = [kROOT] + tag_sequence
         self._sf = score_function
         self.initialize_chart()
-        self._edge_seq = []
 
     def initialize_chart(self):
         """
@@ -150,25 +149,25 @@ class EisnerParser:
 
         return self._reconstruct((0, len(self._sent) - 1, True, True))
 
-    def _rec(self, span):
+    def _get_edges(self, span, edge_seq):
         lst = self._pointer[span]
         lhs = lst[0]
         rhs = lst[1]
 
         if len(lst) == 3:
             edge = lst[2]
-            self._edge_seq.append(edge)
+            edge_seq.append(edge)
 
         if lhs[0] != lhs[1]:
-            self._rec(lhs)
+            self._get_edges(lhs, edge_seq)
 
         if rhs[0] != rhs[1]:
-            self._rec(rhs)
+            self._get_edges(rhs, edge_seq)
 
     def _reconstruct(self, span):
-        self._edge_seq = []
-        self._rec(span)
-        return self._edge_seq
+        edge_seq = []
+        self._get_edges(span, edge_seq)
+        return edge_seq
 
     def _generate_cal_seq(self):
         num_sent = len(self._sent)
