@@ -1,3 +1,8 @@
+# Name: Sanghee Kim
+# Subject: Homework 6
+# Date: Oct, 17 2014
+
+
 from string import punctuation
 from math import log
 import pickle
