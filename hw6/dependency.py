@@ -120,8 +120,19 @@ class EisnerParser:
         """
         Create a chart with singleton spans
         """
-        # Complete this!
-        return None
+        start_points = range(0, len(self._sent))
+        end_points = range(0, len(self._sent))
+        right_dir = [True, False]
+        complete = [True, False]
+
+        for s in start_points:
+            for e in end_points:
+                for r in right_dir:
+                    for c in complete:
+                        score = None
+                        if s == e:
+                            score = 0.0
+                        self._chart[s, e, r, c] = score
 
     def get_score(self, start, stop, right_dir, complete):
         return self._chart[(start, stop, right_dir, complete)]
