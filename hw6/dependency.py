@@ -9,7 +9,6 @@ from nltk.corpus import dependency_treebank as dt
 
 kROOT = "<ROOT>"
 kNEG_INF = float("-inf")
-TL = []
 
 
 def correct_positions(dependency_parse):
@@ -116,6 +115,7 @@ class EisnerParser:
         self._tags = [kROOT] + tag_sequence
         self._sf = score_function
         self.initialize_chart()
+        self._edge_seq = []
 
     def initialize_chart(self):
         """
@@ -152,7 +152,7 @@ class EisnerParser:
 
         if len(lst) == 3:
             edge = lst[2]
-            TL.append(edge)
+            self._edge_seq.append(edge)
 
         if lhs[0] != lhs[1]:
             self._rec(lhs)
@@ -161,8 +161,9 @@ class EisnerParser:
             self._rec(rhs)
 
     def _reconstruct(self, span):
+        self._edge_seq = []
         self._rec(span)
-        return TL
+        return self._edge_seq
 
     def _generate_cal_seq(self):
         num_sent = len(self._sent)
