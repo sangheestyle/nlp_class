@@ -1,3 +1,7 @@
+# Name: Sanghee Kim
+# Subject: Homework 6
+# Date: Oct, 17 2014
+
 import sys
 
 import nltk
